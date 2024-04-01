@@ -1,0 +1,11 @@
+CREATE TABLE solar_panel(
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    brand VARCHAR(40) NOT NULL,
+    model VARCHAR(60) NOT NULL,
+    maximum_power INT NOT NULL,
+    efficiency INT NOT NULL,
+    panel_type VARCHAR(30) NOT NULL,
+    price DECIMAL(8,2) NOT NULL,
+
+    PRIMARY KEY (id)
+)ENGINE=INNODB DEFAULT CHARSET=UTF8MB4;
