@@ -45,7 +45,7 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
 
 //    @ApiResponses(value = @ApiResponse(responseCode = "200"))
     @GetMapping("/{id}/stats")
-    public ResponseEntity<Map<String, Object>> getSolarPanelStats(@PathVariable Long id, @Param("kwh") double kwh) {
+    public ResponseEntity<Map<String, Object>> getSolarPanelStats(@PathVariable Long id, @RequestParam("kwh") double kwh) {
         var panel =  solarPanelService.getSolarPanelOrException(id);
         var solarPanelStatsHashMap = solarPanelService.getStats(panel, kwh);
         return ResponseEntity.status(HttpStatus.OK).body(solarPanelStatsHashMap);
