@@ -26,8 +26,8 @@ public class SolarPanelService {
         return solarPanelRepository.save(solarPanel);
     }
 
-    public Map<String, Object> getStats(SolarPanel solarPanel, double kwh) {
-        Map<String, Object> stats = new HashMap<>();
+    public Map<String, BigDecimal> getStats(SolarPanel solarPanel, double kwh) {
+        Map<String, BigDecimal> stats = new HashMap<>();
 
         var solarPanelPrice = solarPanel.getPrice();
         var maximumPower = solarPanel.getMaximumPower();
@@ -40,7 +40,6 @@ public class SolarPanelService {
                 maximumPower, efficiency, sunIrradiation
         ));
 
-        stats.put("solarPanel", solarPanel);
         stats.put("panelsNeeded", panelsNeeded);
         stats.put("estimatedPrice", estimatedPrice);
         stats.put("returnOfInvestment", returnOfInvestment);
