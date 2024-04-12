@@ -1,10 +1,10 @@
 package fatec.sp.gov.br.smartleaf.api.controller;
 
 
-import fatec.sp.gov.br.smartleaf.api.mapper.SolarPanelCollectionMapper;
-import fatec.sp.gov.br.smartleaf.api.mapper.SolarPanelStatsMapper;
-import fatec.sp.gov.br.smartleaf.api.model.SolarPanelModel;
-import fatec.sp.gov.br.smartleaf.api.model.SolarPanelStatsModel;
+import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelDTO;
+import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelCollectionMapper;
+import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelStatsMapper;
+import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelStatsDTO;
 import fatec.sp.gov.br.smartleaf.api.openapi.SolarPanelControllerOpenApi;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
@@ -27,10 +27,9 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
     private final SolarPanelStatsMapper solarPanelStatsMapper;
     private final SolarPanelCollectionMapper solarPanelCollectionMapper;
 
-
-
+    
     @GetMapping
-    public ResponseEntity<Iterable<SolarPanelModel>> findAllSolarPanels() {
+    public ResponseEntity<Iterable<SolarPanelDTO>> findAllSolarPanels() {
         var panels = solarPanelCollectionMapper.toCollectionModel(solarPanelRepository.findAll());
         return ResponseEntity.status(HttpStatus.OK).body(panels);
     }
@@ -44,7 +43,7 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
 
 
     @GetMapping("/{id}/stats")
-    public ResponseEntity<SolarPanelStatsModel> getSolarPanelStats(@PathVariable Long id, @RequestParam("kwh") double kwh) {
+    public ResponseEntity<SolarPanelStatsDTO> getSolarPanelStats(@PathVariable Long id, @RequestParam("kwh") double kwh) {
         var panel =  solarPanelService.getSolarPanelOrException(id);
         var solarPanelStats = solarPanelStatsMapper.toModel(panel, kwh);
         return ResponseEntity.status(HttpStatus.OK).body(solarPanelStats);

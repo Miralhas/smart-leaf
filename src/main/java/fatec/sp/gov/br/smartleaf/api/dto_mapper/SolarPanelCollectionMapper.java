@@ -1,6 +1,6 @@
-package fatec.sp.gov.br.smartleaf.api.mapper;
+package fatec.sp.gov.br.smartleaf.api.dto_mapper;
 
-import fatec.sp.gov.br.smartleaf.api.model.SolarPanelModel;
+import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelDTO;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -17,11 +17,11 @@ public class SolarPanelCollectionMapper {
         this.modelMapper = modelMapper;
     }
 
-    public SolarPanelModel toModel(SolarPanel solarPanel) {
-        return modelMapper.map(solarPanel, SolarPanelModel.class);
+    public SolarPanelDTO toModel(SolarPanel solarPanel) {
+        return modelMapper.map(solarPanel, SolarPanelDTO.class);
     }
 
-    public Iterable<SolarPanelModel> toCollectionModel(List<SolarPanel> panels) {
+    public Iterable<SolarPanelDTO> toCollectionModel(List<SolarPanel> panels) {
         return panels.stream().map(this::toModel).collect(Collectors.toList());
     }
 }

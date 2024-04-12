@@ -1,5 +1,6 @@
 package fatec.sp.gov.br.smartleaf.domain.service;
 
+import fatec.sp.gov.br.smartleaf.api.dto.StatsDTO;
 import fatec.sp.gov.br.smartleaf.domain.exception.SolarPanelNaoEncontradoException;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
@@ -10,7 +11,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class SolarPanelService {
@@ -26,8 +26,8 @@ public class SolarPanelService {
         return solarPanelRepository.save(solarPanel);
     }
 
-    public Map<String, BigDecimal> getStats(SolarPanel solarPanel, double kwh) {
-        Map<String, BigDecimal> stats = new HashMap<>();
+    public StatsDTO getSolarPanelStats(SolarPanel solarPanel, double kwh) {
+        StatsDTO solarPanelStats = new StatsDTO();
 
         var solarPanelPrice = solarPanel.getPrice();
         var maximumPower = solarPanel.getMaximumPower();
@@ -40,11 +40,11 @@ public class SolarPanelService {
                 maximumPower, efficiency, sunIrradiation
         ));
 
-        stats.put("panelsNeeded", panelsNeeded);
-        stats.put("estimatedPrice", estimatedPrice);
-        stats.put("returnOfInvestment", returnOfInvestment);
+        solarPanelStats.setPanelsNedeed(panelsNeeded);
+        solarPanelStats.setEstimatedPrice(estimatedPrice);
+        solarPanelStats.setReturnOfInvestment(returnOfInvestment);
 
-        return stats;
+        return solarPanelStats;
     }
 
     public SolarPanel update(Long id, SolarPanel solarPanel) {

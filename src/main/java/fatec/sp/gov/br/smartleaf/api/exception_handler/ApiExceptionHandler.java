@@ -66,7 +66,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         var title = "Um ou mais campos inválidos";
         var type = URI.create("https://localhost:8080/errors/campos-invalidos");
-        var problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getLocalizedMessage());
+        var problemDetail = ProblemDetail.forStatusAndDetail(status, "Verifique se está atribuindo todos os campos");
         problemDetail.setTitle(title);
         problemDetail.setType(type);
 

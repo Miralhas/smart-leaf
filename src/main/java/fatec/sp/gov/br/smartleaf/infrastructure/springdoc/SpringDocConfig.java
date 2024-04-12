@@ -16,7 +16,7 @@ public class SpringDocConfig {
     public OpenAPI openAPI() {
         return new OpenAPI().info(new Info()
                 .title("SmartLeaf API")
-                .version("v0.0.1")
+                .version("v1.0.0")
                 .description("SmartLeaf RESTful API Documentation")
         )
                 .tags(
