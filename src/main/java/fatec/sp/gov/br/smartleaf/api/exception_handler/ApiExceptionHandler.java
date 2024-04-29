@@ -51,7 +51,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         var title = "Inválido";
         var type = URI.create("https://localhost:8080/errors/campos-invalidos");
-        var detail = "Mensagem Http não é legível. Corrija a sintaxe";
+        var detail = "Mensagem inválida, verifique erros de sintaxe.";
 
         var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Setter
 public class SolarPanelStatsDTO {
     private Long id;
+    private String brand;
     private String model;
     private Integer maximumPower;
     private Integer efficiency;

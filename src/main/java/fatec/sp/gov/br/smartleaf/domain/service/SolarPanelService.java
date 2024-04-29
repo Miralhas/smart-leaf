@@ -16,6 +16,7 @@ import java.util.Map;
 public class SolarPanelService {
 
     public static final double K_WH_PRICE = 0.92;
+    public static final double SUN_IRRADIATION = 4.93;
     private final SolarPanelRepository solarPanelRepository;
 
     public SolarPanelService(SolarPanelRepository solarPanelRepository) {
@@ -31,13 +32,12 @@ public class SolarPanelService {
 
         var solarPanelPrice = solarPanel.getPrice();
         var maximumPower = solarPanel.getMaximumPower();
-        var efficiency = solarPanel.getEfficiency();
-        var sunIrradiation = 4.93;
+        var efficiencyPercentage = solarPanel.getEfficiency();
 
-        var panelsNeeded = getPanelsNeeded(maximumPower, efficiency, sunIrradiation, kwh);
+        var panelsNeeded = getPanelsNeeded(maximumPower, efficiencyPercentage, kwh);
         var estimatedPrice = getEstimatedPrice(panelsNeeded, solarPanelPrice);
         var returnOfInvestment = getReturnOfInvestment(estimatedPrice, getsolarPanelMonthlyEnergy(
-                maximumPower, efficiency, sunIrradiation
+                maximumPower, efficiencyPercentage
         ));
 
         solarPanelStats.setPanelsNedeed(panelsNeeded);
@@ -69,8 +69,8 @@ public class SolarPanelService {
     }
 
 
-    private BigDecimal getPanelsNeeded(Integer maximumPower, Integer efficiency, double sunIrradiation, double kwh) {
-        var solarPanelMonthlyEnergy = getsolarPanelMonthlyEnergy(maximumPower, efficiency, sunIrradiation);
+    private BigDecimal getPanelsNeeded(Integer maximumPower, Integer efficiencyPercentage, double kwh) {
+        var solarPanelMonthlyEnergy = getsolarPanelMonthlyEnergy(maximumPower, efficiencyPercentage);
 
         return BigDecimal.valueOf(kwh / solarPanelMonthlyEnergy)
                 .setScale(2, RoundingMode.FLOOR);
@@ -83,8 +83,8 @@ public class SolarPanelService {
         return BigDecimal.valueOf(returnOfInvestment).setScale(2, RoundingMode.FLOOR);
     }
 
-    private double getsolarPanelMonthlyEnergy(Integer maximumPower, Integer efficiency, double sunIrradiation) {
-        var solarPanelDailyEnergy = maximumPower * (efficiency / 100.0);
-        return ((solarPanelDailyEnergy * sunIrradiation) * 30) / 100.0;
+    private double getsolarPanelMonthlyEnergy(Integer maximumPower, Integer efficiencyPercentage) {
+        var solarPanelDailyEnergy = maximumPower * (efficiencyPercentage / 100.0);
+        return ((solarPanelDailyEnergy * SUN_IRRADIATION) * 30) / 100.0;
     }
 }

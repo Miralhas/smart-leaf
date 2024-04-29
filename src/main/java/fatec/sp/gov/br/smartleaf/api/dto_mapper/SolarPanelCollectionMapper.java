@@ -22,6 +22,6 @@ public class SolarPanelCollectionMapper {
     }
 
     public Iterable<SolarPanelDTO> toCollectionModel(List<SolarPanel> panels) {
-        return panels.stream().map(this::toModel).collect(Collectors.toList());
+        return panels.stream().map(this::toModel).toList();
     }
 }

@@ -10,5 +10,6 @@ import java.math.BigDecimal;
 public class SolarPanelDTO {
     private Long id;
     private String model;
+    private String brand;
     private BigDecimal price;
 }
