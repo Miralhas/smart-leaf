@@ -7,7 +7,8 @@ import lombok.Getter;
 public enum ProblemType {
     ENTIDADE_NAO_ENCONTRADA("Entidade não encontrada"),
     ERRO_DE_NEGOCIO("Erro na regra de negócio"),
-    MENSAGEM_INCOMPREENSIVEL( "Mensagem incompreensivel");
+    MENSAGEM_INCOMPREENSIVEL( "Mensagem incompreensivel"),
+    IMAGEM_NAO_ENCONTRADA("Imagem não encontrada");
 
     private final String title;
 

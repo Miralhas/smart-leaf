@@ -21,7 +21,7 @@ public class SolarPanelCollectionMapper {
         return modelMapper.map(solarPanel, SolarPanelDTO.class);
     }
 
-    public Iterable<SolarPanelDTO> toCollectionModel(List<SolarPanel> panels) {
+    public List<SolarPanelDTO> toCollectionModel(List<SolarPanel> panels) {
         return panels.stream().map(this::toModel).toList();
     }
 }

@@ -2,6 +2,8 @@ package fatec.sp.gov.br.smartleaf.api.exception_handler;
 
 import fatec.sp.gov.br.smartleaf.domain.exception.BusinessException;
 import fatec.sp.gov.br.smartleaf.domain.exception.EntidadeNaoEncontradaException;
+import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
+import fatec.sp.gov.br.smartleaf.infrastructure.service.storage.StorageException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,7 +16,6 @@ import java.net.URI;
 
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
-
 
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleBusinessException(BusinessException ex, WebRequest request) {
@@ -30,16 +31,30 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(ImagemNaoEncontradaException.class)
+    public ProblemDetail handleImagemNaoEncontradaException(ImagemNaoEncontradaException ex, WebRequest request) {
+        var status = HttpStatus.BAD_REQUEST;
+        var detail = ex.getMessage();
+        var title = ProblemType.IMAGEM_NAO_ENCONTRADA.getTitle();
+        var type = URI.create("https://localhost:8080/errors/imagem-nao-encontrada");
+
+        var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setTitle(title);
+        problemDetail.setType(type);
+
+        return problemDetail;
+    }
+
 
     @ExceptionHandler(EntidadeNaoEncontradaException.class)
     public ProblemDetail handleEntidadeNaoEncontradaException(BusinessException ex, WebRequest request) {
         var status = HttpStatus.NOT_FOUND;
         var detail = ex.getMessage();
-        var problemType = ProblemType.ENTIDADE_NAO_ENCONTRADA;
+        var title = ProblemType.ENTIDADE_NAO_ENCONTRADA.getTitle();
         var type = URI.create("https://localhost:8080/errors/entidade-nao-encontrada");
 
         var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(problemType.getTitle());
+        problemDetail.setTitle(title);
         problemDetail.setType(type);
 
         return problemDetail;

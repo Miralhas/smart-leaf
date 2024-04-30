@@ -2,29 +2,57 @@ package fatec.sp.gov.br.smartleaf.domain.service;
 
 import fatec.sp.gov.br.smartleaf.api.dto.StatsDTO;
 import fatec.sp.gov.br.smartleaf.domain.exception.SolarPanelNaoEncontradoException;
+import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 
 @Service
+@RequiredArgsConstructor
 public class SolarPanelService {
 
     public static final double K_WH_PRICE = 0.92;
     public static final double SUN_IRRADIATION = 4.93;
+
+    @Value("${smartleaf.storage.local.diretorio-fotos}")
+    private Path storagePath;
     private final SolarPanelRepository solarPanelRepository;
 
-    public SolarPanelService(SolarPanelRepository solarPanelRepository) {
-        this.solarPanelRepository = solarPanelRepository;
+    public SolarPanel save(SolarPanel solarPanel) {
+        solarPanel = solarPanelRepository.save(solarPanel);
+        try {
+            FotoSolarPanel fotoSolarPanel = getDefaultImageSolarPanel(solarPanel);
+            solarPanelRepository.saveImage(fotoSolarPanel);
+        } catch (IOException | InvalidPathException e) {
+            throw new RuntimeException("Erro ao recuperar imagem default", e);
+        }
+        return solarPanel;
     }
 
-    public SolarPanel save(SolarPanel solarPanel) {
-        return solarPanelRepository.save(solarPanel);
+
+    private FotoSolarPanel getDefaultImageSolarPanel(SolarPanel solarPanel) throws IOException {
+        Path defaultImagePath = storagePath.resolve("default.jpg");
+        InputStream defaultImageInputStream = Files.newInputStream(defaultImagePath);
+        FotoSolarPanel fotoSolarPanel = new FotoSolarPanel();
+        fotoSolarPanel.setSolarPanel(solarPanel);
+        fotoSolarPanel.setDescricao("Default Solar Panel");
+        fotoSolarPanel.setTamanho((long) defaultImageInputStream.available());
+        fotoSolarPanel.setNomeArquivo("default.jpg");
+        fotoSolarPanel.setContentType("image/jpg");
+        return fotoSolarPanel;
     }
 
     public StatsDTO getSolarPanelStats(SolarPanel solarPanel, double kwh) {

@@ -1,6 +1,7 @@
 set foreign_key_checks = 0;
 
 delete from solar_panel;
+delete from foto_solar_panel;
 
 set foreign_key_checks = 1;
 
