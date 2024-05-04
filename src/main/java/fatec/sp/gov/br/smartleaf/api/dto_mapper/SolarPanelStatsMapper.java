@@ -1,7 +1,6 @@
 package fatec.sp.gov.br.smartleaf.api.dto_mapper;
 
 import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelStatsDTO;
-import fatec.sp.gov.br.smartleaf.api.dto.StatsDTO;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.service.SolarPanelService;
 import org.modelmapper.ModelMapper;

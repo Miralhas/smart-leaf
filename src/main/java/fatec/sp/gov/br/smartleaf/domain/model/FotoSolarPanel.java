@@ -1,6 +1,5 @@
 package fatec.sp.gov.br.smartleaf.domain.model;
 
-import fatec.sp.gov.br.smartleaf.domain.exception.SolarPanelNaoEncontradoException;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

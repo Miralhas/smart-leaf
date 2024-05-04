@@ -1,9 +1,6 @@
 package fatec.sp.gov.br.smartleaf.infrastructure.service.storage;
 
-import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
 import fatec.sp.gov.br.smartleaf.domain.service.FotoStorageService;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -14,12 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Service
-@RequiredArgsConstructor
 public class LocalFotoStorageService implements FotoStorageService {
 
     @Value("${smartleaf.storage.local.diretorio-fotos}")
     private Path storagePath;
-    private final SolarPanelRepository solarPanelRepository;
 
 
     @Override

@@ -27,7 +27,6 @@ public class SolarPanelImageController {
     private final FotoSolarPanelMapper fotoSolarPanelMapper;
     private final SolarPanelService solarPanelService;
 
-
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public FotoSolarPanelDTO getSolarPanelImageJSON(@PathVariable Long id) {
@@ -47,7 +46,7 @@ public class SolarPanelImageController {
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FotoSolarPanelDTO updateSolarPanelImage(@PathVariable Long id, @Valid FotoProdutoInput fotoProdutoInput) throws IOException {
         FotoSolarPanel foto = fotoProdutoInput.formatTo(solarPanelService.getSolarPanelOrException(id));
-        FotoSolarPanel savedFoto = solarPanelImageService.save(foto,fotoProdutoInput.arquivoInputStream());
+        FotoSolarPanel savedFoto = solarPanelImageService.save(foto, fotoProdutoInput.arquivoInputStream());
         return fotoSolarPanelMapper.toModel(savedFoto);
     }
 

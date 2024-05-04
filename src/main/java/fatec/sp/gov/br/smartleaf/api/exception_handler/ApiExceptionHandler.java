@@ -3,7 +3,6 @@ package fatec.sp.gov.br.smartleaf.api.exception_handler;
 import fatec.sp.gov.br.smartleaf.domain.exception.BusinessException;
 import fatec.sp.gov.br.smartleaf.domain.exception.EntidadeNaoEncontradaException;
 import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
-import fatec.sp.gov.br.smartleaf.infrastructure.service.storage.StorageException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.net.URI;
 
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -22,7 +19,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         var status = HttpStatus.BAD_REQUEST;
         var detail = ex.getMessage();
         var problemType = ProblemType.ERRO_DE_NEGOCIO;
-        var type = URI.create("https://localhost:8080/errors/business-error");
+        var type = ProblemType.ERRO_DE_NEGOCIO.getType();
 
         var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(problemType.getTitle());
@@ -36,7 +33,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         var status = HttpStatus.BAD_REQUEST;
         var detail = ex.getMessage();
         var title = ProblemType.IMAGEM_NAO_ENCONTRADA.getTitle();
-        var type = URI.create("https://localhost:8080/errors/imagem-nao-encontrada");
+        var type = ProblemType.IMAGEM_NAO_ENCONTRADA.getType();
 
         var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);
@@ -51,7 +48,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         var status = HttpStatus.NOT_FOUND;
         var detail = ex.getMessage();
         var title = ProblemType.ENTIDADE_NAO_ENCONTRADA.getTitle();
-        var type = URI.create("https://localhost:8080/errors/entidade-nao-encontrada");
+        var type = ProblemType.ENTIDADE_NAO_ENCONTRADA.getType();
 
         var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);
@@ -64,9 +61,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-        var title = "Inválido";
-        var type = URI.create("https://localhost:8080/errors/campos-invalidos");
-        var detail = "Mensagem inválida, verifique erros de sintaxe.";
+        var title = ProblemType.MENSAGEM_INCOMPREENSIVEL.getTitle();
+        var type = ProblemType.MENSAGEM_INCOMPREENSIVEL.getType();
+        var detail = "Falha ao ler requisição, verifique erros de sintaxe";
 
         var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);
@@ -75,13 +72,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, problemDetail, headers, status, request);
     }
 
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-        var title = "Um ou mais campos inválidos";
-        var type = URI.create("https://localhost:8080/errors/campos-invalidos");
-        var problemDetail = ProblemDetail.forStatusAndDetail(status, "Verifique se está atribuindo todos os campos");
+        var title = ProblemType.CAMPO_INVALIDO.getTitle();
+        var type = ProblemType.CAMPO_INVALIDO.getType();
+        var detail = "Conteúdo da requisição inválido. Um ou mais campos estão inválidos";
+        var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);
         problemDetail.setType(type);
 

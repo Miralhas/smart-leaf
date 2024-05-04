@@ -1,4 +1,4 @@
-package fatec.sp.gov.br.smartleaf.infrastructure.springdoc;
+package fatec.sp.gov.br.smartleaf.config;
 
 
 import io.swagger.v3.oas.models.OpenAPI;
