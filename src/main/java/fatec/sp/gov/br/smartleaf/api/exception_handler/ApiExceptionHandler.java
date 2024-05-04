@@ -83,9 +83,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.toList());
+        Map<String, String> errorsMap = new HashMap<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errorsMap.put(error.getField(), error.getDefaultMessage()));
 
         var title = ProblemType.CAMPO_INVALIDO.getTitle();
         var type = ProblemType.CAMPO_INVALIDO.getType();
@@ -93,7 +93,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);
         problemDetail.setType(type);
-        problemDetail.setProperty("errors", errors);
+        problemDetail.setProperty("errors", errorsMap);
 
 
         return super.handleExceptionInternal(ex, problemDetail, headers, status, request);

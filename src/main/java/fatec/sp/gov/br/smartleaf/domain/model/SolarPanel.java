@@ -20,30 +20,30 @@ public class SolarPanel {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @NotBlank(message = "Marca Inválida: Marca em branco")
+    @NotBlank(message = "Marca em branco")
     @Column(name = "brand")
     private String brand;
 
-    @NotBlank(message = "Modelo Inválido: Modelo em branco")
+    @NotBlank(message = "Modelo em branco")
     @Column(name = "model")
     private String model;
 
-    @Positive(message = "Poder Máximo inválido: Menor ou igual a zero")
-    @NotNull(message = "Poder Máximo inválido: Valor Nulo")
+    @Positive(message = "Menor ou igual a zero")
+    @NotNull(message = "Valor Nulo")
     @Column(name = "maximum_power")
     private Integer maximumPower;
 
-    @Positive(message = "Eficiência inválida: Menor ou igual a zero")
-    @NotNull(message = "Eficiência inválida: Valor Nulo")
+    @Positive(message = "Menor ou igual a zero")
+    @NotNull(message = "Valor Nulo")
     @Column(name = "efficiency")
     private Integer efficiency;
 
-    @NotBlank(message = "Tipo de Painel Inválido: Tipo de painel em branco")
+    @NotBlank(message = "Tipo de painel em branco")
     @Column(name = "panel_type")
     private String panelType;
 
-    @Positive(message = "Eficiência inválida: Menor ou igual a zero")
-    @NotNull(message = "Preço Inválido: Valor Nulo")
+    @Positive(message = "Menor ou igual a zero")
+    @NotNull(message = "Valor Nulo")
     @Column(name = "price")
     private BigDecimal price;
 

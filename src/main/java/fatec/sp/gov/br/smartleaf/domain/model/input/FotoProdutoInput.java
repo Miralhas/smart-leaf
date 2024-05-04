@@ -16,10 +16,10 @@ import java.io.InputStream;
 @Setter
 public class FotoProdutoInput {
 
-    @NotNull
+    @NotNull(message = "Arquivo Nulo")
     private MultipartFile arquivo;
 
-    @NotBlank
+    @NotBlank(message = "Descrição em branco")
     private String descricao;
 
     public FotoSolarPanel formatTo(SolarPanel solarPanel) {
