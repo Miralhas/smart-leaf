@@ -42,7 +42,7 @@ public class SolarPanelService {
 
 
     private FotoSolarPanel getDefaultImageSolarPanel(SolarPanel solarPanel) throws IOException {
-        Path defaultImagePath = storagePath.resolve("default.jpg");
+        Path defaultImagePath = storagePath.resolve(SolarPanelImageService.DEFAULT_IMAGE_FILENAME);
         InputStream defaultImageInputStream = Files.newInputStream(defaultImagePath);
         FotoSolarPanel fotoSolarPanel = new FotoSolarPanel();
         fotoSolarPanel.setSolarPanel(solarPanel);

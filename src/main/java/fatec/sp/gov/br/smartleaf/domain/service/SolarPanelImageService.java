@@ -1,5 +1,6 @@
 package fatec.sp.gov.br.smartleaf.domain.service;
 
+import fatec.sp.gov.br.smartleaf.domain.exception.ImagemDefaultException;
 import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
 import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SolarPanelImageService {
 
+    public static final String DEFAULT_IMAGE_FILENAME = "default.jpg";
     private final SolarPanelRepository solarPanelRepository;
     private final SolarPanelService solarPanelService;
     private final FotoStorageService fotoStorageService;
@@ -71,6 +73,9 @@ public class SolarPanelImageService {
 
     public void delete(Long id) {
         FotoSolarPanel fotoSolarPanel = getImageJSONOrException(id);
+        if (fotoSolarPanel.getNomeArquivo().equals(DEFAULT_IMAGE_FILENAME)) {
+            throw new ImagemDefaultException();
+        }
         solarPanelRepository.deleteImage(fotoSolarPanel);
         fotoStorageService.remover(fotoSolarPanel.getNomeArquivo());
     }
