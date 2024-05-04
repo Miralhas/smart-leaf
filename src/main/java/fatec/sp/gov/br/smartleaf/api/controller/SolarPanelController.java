@@ -60,7 +60,7 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<SolarPanel> updateSolarPanel(@PathVariable Long id, @RequestBody SolarPanel solarPanel) {
+    public ResponseEntity<SolarPanel> updateSolarPanel(@PathVariable Long id, @Valid @RequestBody SolarPanel solarPanel) {
         SolarPanel updatedPanel = solarPanelService.update(id, solarPanel);
         return ResponseEntity.status(HttpStatus.OK).body(updatedPanel);
     }
@@ -68,7 +68,7 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
 
     @ApiResponses(value = @ApiResponse(responseCode = "204"))
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteSolarPanel(@Valid @PathVariable Long id) {
+    public ResponseEntity<Object> deleteSolarPanel(@PathVariable Long id) {
         solarPanelService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -73,6 +73,8 @@ public class SolarPanelImageService {
 
     public void delete(Long id) {
         FotoSolarPanel fotoSolarPanel = getImageJSONOrException(id);
+
+        // Previnir que uma imagem default seja apagada.
         if (fotoSolarPanel.getNomeArquivo().equals(DEFAULT_IMAGE_FILENAME)) {
             throw new ImagemDefaultException();
         }
