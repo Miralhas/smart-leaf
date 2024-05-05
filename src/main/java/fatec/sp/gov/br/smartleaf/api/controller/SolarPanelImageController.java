@@ -3,7 +3,7 @@ package fatec.sp.gov.br.smartleaf.api.controller;
 import fatec.sp.gov.br.smartleaf.api.dto.FotoSolarPanelDTO;
 import fatec.sp.gov.br.smartleaf.api.dto_mapper.FotoSolarPanelMapper;
 import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
-import fatec.sp.gov.br.smartleaf.domain.model.input.FotoProdutoInput;
+import fatec.sp.gov.br.smartleaf.api.dto.input.FotoProdutoInput;
 import fatec.sp.gov.br.smartleaf.domain.service.SolarPanelImageService;
 import fatec.sp.gov.br.smartleaf.domain.service.SolarPanelService;
 import jakarta.validation.Valid;

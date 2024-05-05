@@ -3,9 +3,13 @@ package fatec.sp.gov.br.smartleaf.api.exception_handler;
 import fatec.sp.gov.br.smartleaf.domain.exception.BusinessException;
 import fatec.sp.gov.br.smartleaf.domain.exception.EntidadeNaoEncontradaException;
 import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,12 +17,40 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private final MessageSource messageSource;
+    Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        log.warn("Validation error occurred: {}", ex.getMessage());
+
+        Map<String, String> errorsMap = new HashMap<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> {
+                    String message  = messageSource.getMessage(error, LocaleContextHolder.getLocale());
+                    errorsMap.put(error.getField(), message);
+                });
+
+        var title = ProblemType.CAMPO_INVALIDO.getTitle();
+        var type = ProblemType.CAMPO_INVALIDO.getType();
+        var detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente";
+        var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setTitle(title);
+        problemDetail.setType(type);
+        problemDetail.setProperty("errors", errorsMap);
+
+
+        return super.handleExceptionInternal(ex, problemDetail, headers, status, request);
+    }
+
 
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleBusinessException(BusinessException ex, WebRequest request) {
@@ -79,24 +111,5 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
-        Map<String, String> errorsMap = new HashMap<>();
-        ex.getBindingResult().getFieldErrors()
-                .forEach(error -> errorsMap.put(error.getField(), error.getDefaultMessage()));
-
-        var title = ProblemType.CAMPO_INVALIDO.getTitle();
-        var type = ProblemType.CAMPO_INVALIDO.getType();
-        var detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente";
-        var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
-        problemDetail.setType(type);
-        problemDetail.setProperty("errors", errorsMap);
-
-
-        return super.handleExceptionInternal(ex, problemDetail, headers, status, request);
-    }
 }
 

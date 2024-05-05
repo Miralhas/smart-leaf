@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -20,30 +22,30 @@ public class SolarPanel {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @NotBlank(message = "Marca em branco")
+    @NotBlank
     @Column(name = "brand")
     private String brand;
 
-    @NotBlank(message = "Modelo em branco")
+    @NotBlank
     @Column(name = "model")
     private String model;
 
-    @Positive(message = "Menor ou igual a zero")
-    @NotNull(message = "Valor Nulo")
+    @Positive
+    @NotNull
     @Column(name = "maximum_power")
     private Integer maximumPower;
 
-    @Positive(message = "Menor ou igual a zero")
-    @NotNull(message = "Valor Nulo")
+    @Positive
+    @NotNull
     @Column(name = "efficiency")
     private Integer efficiency;
 
-    @NotBlank(message = "Tipo de painel em branco")
+    @NotBlank
     @Column(name = "panel_type")
     private String panelType;
 
-    @Positive(message = "Menor ou igual a zero")
-    @NotNull(message = "Valor Nulo")
+    @Positive
+    @NotNull
     @Column(name = "price")
     private BigDecimal price;
 

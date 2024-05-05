@@ -1,4 +1,4 @@
-package fatec.sp.gov.br.smartleaf.domain.model.input;
+package fatec.sp.gov.br.smartleaf.api.dto.input;
 
 import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
