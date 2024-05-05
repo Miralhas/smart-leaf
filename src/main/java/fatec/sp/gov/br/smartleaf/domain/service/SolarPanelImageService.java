@@ -5,13 +5,17 @@ import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
 import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,25 +24,36 @@ import java.util.Optional;
 public class SolarPanelImageService {
 
     public static final String DEFAULT_IMAGE_FILENAME = "default.jpg";
+    public static final String DEFAULT_IMAGE_MEDIA_TYPE = "image/jpg";
+
     private final SolarPanelRepository solarPanelRepository;
     private final SolarPanelService solarPanelService;
     private final FotoStorageService fotoStorageService;
 
-    public ResponseEntity<InputStreamResource> getImageOrException(Long id, String acceptHeader) throws HttpMediaTypeNotAcceptableException {
-        FotoSolarPanel foto = getImageJSONOrException(id);
+    public ResponseEntity<InputStreamResource> getImage(Long id, String acceptHeader)
+            throws HttpMediaTypeNotAcceptableException {
+        try {
+            FotoSolarPanel foto = getImageJSONOrException(id);
+            List<MediaType> providedMediaTypes = MediaType.parseMediaTypes(acceptHeader);
 
-        List<MediaType> providedMediaTypes = MediaType.parseMediaTypes(acceptHeader);
+            MediaType mediaTypeFoto = MediaType.parseMediaType(foto.getContentType());
+            verificarCompatibilidadeMediaType(mediaTypeFoto, providedMediaTypes);
 
-        MediaType mediaTypeFoto = MediaType.parseMediaType(foto.getContentType());
-        verificarCompatibilidadeMediaType(mediaTypeFoto, providedMediaTypes);
+            InputStream fotoInputStream = fotoStorageService.recuperar(foto.getNomeArquivo());
 
-        InputStream fotoInputStream = fotoStorageService.recuperar(foto.getNomeArquivo());
-
-        return ResponseEntity.ok()
-                .contentType(mediaTypeFoto)
-                .body(new InputStreamResource(fotoInputStream));
-
+            return ResponseEntity.ok()
+                    .contentType(mediaTypeFoto)
+                    .body(new InputStreamResource(fotoInputStream));
+        } catch (ImagemNaoEncontradaException e) {
+            // Caso a entidade não tenha uma imagem, retornamos uma default.
+            InputStream foto = fotoStorageService.recuperar(DEFAULT_IMAGE_FILENAME);
+            MediaType defaultImageMediaType = MediaType.parseMediaType(DEFAULT_IMAGE_MEDIA_TYPE);
+            return ResponseEntity.ok()
+                    .contentType(defaultImageMediaType)
+                    .body(new InputStreamResource(foto));
+        }
     }
+
 
     public FotoSolarPanel getImageJSONOrException(Long id) {
         solarPanelService.getSolarPanelOrException(id);
@@ -55,6 +70,7 @@ public class SolarPanelImageService {
         Optional<FotoSolarPanel> fotoExistente = solarPanelRepository.findFotoById(foto.getSolarPanelId());
         if (fotoExistente.isPresent()) {
             nomeArquivoExistente = fotoExistente.get().getNomeArquivo();
+            // Removendo do Banco de Dados
             solarPanelRepository.deleteImage(fotoExistente.get());
         }
 
@@ -66,6 +82,7 @@ public class SolarPanelImageService {
                 .inputStream(dadosArquivo)
                 .build();
 
+        // Adicionando a nova no armazenamento local e caso tenha uma antiga removemos ela.
         fotoStorageService.substituir(novaFoto, nomeArquivoExistente);
 
         return foto;
@@ -73,14 +90,12 @@ public class SolarPanelImageService {
 
     public void delete(Long id) {
         FotoSolarPanel fotoSolarPanel = getImageJSONOrException(id);
-
         // Previnir que uma imagem default seja apagada.
-        if (fotoSolarPanel.getNomeArquivo().equals(DEFAULT_IMAGE_FILENAME)) {
-            throw new ImagemDefaultException();
-        }
         solarPanelRepository.deleteImage(fotoSolarPanel);
         fotoStorageService.remover(fotoSolarPanel.getNomeArquivo());
     }
+
+
 
     private void verificarCompatibilidadeMediaType(MediaType mediaTypeFoto, List<MediaType> providedMediaTypes)
             throws HttpMediaTypeNotAcceptableException {

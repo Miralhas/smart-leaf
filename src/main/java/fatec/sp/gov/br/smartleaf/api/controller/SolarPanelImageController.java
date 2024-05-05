@@ -36,9 +36,9 @@ public class SolarPanelImageController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<InputStreamResource> getSolarPanelImage(
-            @PathVariable Long id, @RequestHeader(name = "accept") String acceptHeader) throws HttpMediaTypeNotAcceptableException {
-        return solarPanelImageService.getImageOrException(id, acceptHeader);
+    public ResponseEntity<InputStreamResource> getSolarPanelImage(@PathVariable Long id, @RequestHeader(name = "accept") String acceptHeader)
+            throws HttpMediaTypeNotAcceptableException {
+        return solarPanelImageService.getImage(id, acceptHeader);
     }
 
     // Esse endpoint apenas aceita o content-type do tipo multipart form data

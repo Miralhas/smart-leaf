@@ -1,6 +1,7 @@
 package fatec.sp.gov.br.smartleaf.domain.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -23,30 +24,29 @@ public class SolarPanel {
     private Long id;
 
     @NotBlank
-    @Column(name = "brand")
+    @Column(name = "brand", nullable = false)
     private String brand;
 
     @NotBlank
-    @Column(name = "model")
+    @Column(name = "model", nullable = false)
     private String model;
 
     @Positive
     @NotNull
-    @Column(name = "maximum_power")
+    @Column(name = "maximum_power", nullable = false)
     private Integer maximumPower;
 
     @Positive
     @NotNull
-    @Column(name = "efficiency")
+    @Column(name = "efficiency", nullable = false)
     private Integer efficiency;
 
     @NotBlank
-    @Column(name = "panel_type")
+    @Column(name = "panel_type", nullable = false)
     private String panelType;
 
     @Positive
     @NotNull
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
-
 }

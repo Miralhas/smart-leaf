@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface SolarPanelRepository extends JpaRepository<SolarPanel, Long>, SolarPanelRepositoryQueries {
     @Query("from FotoSolarPanel where solarPanel.id = :id")
     Optional<FotoSolarPanel> findFotoById(Long id);
-
 }
