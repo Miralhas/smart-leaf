@@ -24,7 +24,6 @@ import java.util.Optional;
 public class SolarPanelImageService {
 
     public static final String DEFAULT_IMAGE_FILENAME = "default.jpg";
-    public static final String DEFAULT_IMAGE_MEDIA_TYPE = "image/jpg";
 
     private final SolarPanelRepository solarPanelRepository;
     private final SolarPanelService solarPanelService;
@@ -47,10 +46,7 @@ public class SolarPanelImageService {
         } catch (ImagemNaoEncontradaException e) {
             // Caso a entidade não tenha uma imagem, retornamos uma default.
             InputStream foto = fotoStorageService.recuperar(DEFAULT_IMAGE_FILENAME);
-            MediaType defaultImageMediaType = MediaType.parseMediaType(DEFAULT_IMAGE_MEDIA_TYPE);
-            return ResponseEntity.ok()
-                    .contentType(defaultImageMediaType)
-                    .body(new InputStreamResource(foto));
+            return ResponseEntity.ok().body(new InputStreamResource(foto));
         }
     }
 

@@ -6,11 +6,13 @@ import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -25,6 +27,28 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageSource messageSource;
     Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleUncaught(Exception ex, WebRequest webRequest) {
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
+        var detail = "Ocorreu um erro interno inesperado no sistema. Tente novamente e se "
+                + "o problema persistir, entre em contato com o administrador do sistema.";
+        var title = ProblemType.ERRO_DE_SISTEMA.getTitle();
+        var type = ProblemType.ERRO_DE_SISTEMA.getType();
+        var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setTitle(title);
+        problemDetail.setType(type);
+
+        return problemDetail;
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+        HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        String detail = String.format("Parâmetro obrigatório '%s' não está presente", ex.getParameterName());
+        var problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        return super.handleExceptionInternal(ex, problemDetail, headers, status, request);
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

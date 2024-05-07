@@ -16,7 +16,6 @@ public class LocalFotoStorageService implements FotoStorageService {
     @Value("${smartleaf.storage.local.diretorio-fotos}")
     private Path storagePath;
 
-
     @Override
     public InputStream recuperar(String nomeArquivo) {
         try {
