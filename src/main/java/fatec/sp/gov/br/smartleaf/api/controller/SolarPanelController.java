@@ -65,8 +65,7 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public SolarPanel updateSolarPanel(@PathVariable Long id, @RequestBody @Valid SolarPanelInput solarPanelInput) {
-        var solarPanel = solarPanelUnmapper.toDomainObject(solarPanelInput);
-        return  solarPanelService.update(id, solarPanel);
+        return  solarPanelService.update(id, solarPanelInput);
     }
 
 

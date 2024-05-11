@@ -10,6 +10,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SolarPanelImageService {
 
     public static final String DEFAULT_IMAGE_FILENAME = "default.jpg";
@@ -60,6 +62,7 @@ public class SolarPanelImageService {
                 .orElseThrow(() -> new ImagemNaoEncontradaException(id));
     }
 
+    @Transactional
     public FotoSolarPanel save(FotoSolarPanel foto, InputStream dadosArquivo) {
         String novoNomeFoto = fotoStorageService.gerarNomeArquivo(foto.getNomeArquivo());
         String nomeArquivoExistente = null;
@@ -71,6 +74,7 @@ public class SolarPanelImageService {
             nomeArquivoExistente = fotoExistente.get().getNomeArquivo();
             // Removendo do Banco de Dados
             solarPanelRepository.deleteImage(fotoExistente.get());
+            solarPanelRepository.flush();
         }
 
         foto = solarPanelRepository.saveImage(foto);
@@ -87,6 +91,7 @@ public class SolarPanelImageService {
         return foto;
     }
 
+    @Transactional
     public void delete(Long id) {
         FotoSolarPanel fotoSolarPanel = getImageJSONOrException(id);
         // Previnir que uma imagem default seja apagada.

@@ -1,27 +1,22 @@
 package fatec.sp.gov.br.smartleaf.domain.service;
 
 import fatec.sp.gov.br.smartleaf.api.dto.StatsDTO;
+import fatec.sp.gov.br.smartleaf.api.dto.input.SolarPanelInput;
+import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelUnmapper;
 import fatec.sp.gov.br.smartleaf.domain.exception.SolarPanelNaoEncontradoException;
-import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 
 @Service
+@Transactional(readOnly = true)
 public class SolarPanelService {
 
     public static final double K_WH_PRICE = 0.92;
@@ -29,12 +24,16 @@ public class SolarPanelService {
 
     private final SolarPanelRepository solarPanelRepository;
     private final SolarPanelImageService solarPanelImageService;
+    private final SolarPanelUnmapper solarPanelUnmapper;
 
-    public SolarPanelService(SolarPanelRepository solarPanelRepository, @Lazy SolarPanelImageService solarPanelImageService) {
+    public SolarPanelService(SolarPanelRepository solarPanelRepository,
+                             @Lazy SolarPanelImageService solarPanelImageService, SolarPanelUnmapper solarPanelUnmapper) {
         this.solarPanelRepository = solarPanelRepository;
         this.solarPanelImageService = solarPanelImageService;
+        this.solarPanelUnmapper = solarPanelUnmapper;
     }
 
+    @Transactional
     public SolarPanel save(SolarPanel solarPanel) {
         solarPanel = solarPanelRepository.save(solarPanel);
         return solarPanel;
@@ -61,17 +60,20 @@ public class SolarPanelService {
         return solarPanelStats;
     }
 
-    public SolarPanel update(Long id, SolarPanel solarPanel) {
+    @Transactional
+    public SolarPanel update(Long id, SolarPanelInput solarPanelInput) {
         var currentSolarPanel = getSolarPanelOrException(id);
-        BeanUtils.copyProperties(solarPanel, currentSolarPanel, "id");
+        solarPanelUnmapper.copyToDomainObject(solarPanelInput, currentSolarPanel);
         return solarPanelRepository.save(currentSolarPanel);
     }
 
+    @Transactional
     public void delete(Long id) {
         try {
             solarPanelRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             solarPanelImageService.delete(id);
+            solarPanelRepository.flush();
             solarPanelRepository.deleteById(id);
         }
     }
