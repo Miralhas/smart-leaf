@@ -3,8 +3,10 @@ package fatec.sp.gov.br.smartleaf.api.controller;
 
 import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelDTO;
 import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelStatsDTO;
+import fatec.sp.gov.br.smartleaf.api.dto.input.SolarPanelInput;
 import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelCollectionMapper;
 import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelStatsMapper;
+import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelUnmapper;
 import fatec.sp.gov.br.smartleaf.api.openapi.SolarPanelControllerOpenApi;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
@@ -14,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,48 +29,50 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
     private final SolarPanelService solarPanelService;
     private final SolarPanelStatsMapper solarPanelStatsMapper;
     private final SolarPanelCollectionMapper solarPanelCollectionMapper;
+    private final SolarPanelUnmapper solarPanelUnmapper;
 
     @GetMapping
-    public ResponseEntity<Iterable<SolarPanelDTO>> findAllSolarPanels() {
-        List<SolarPanelDTO> panels = solarPanelCollectionMapper.toCollectionModel(solarPanelRepository.findAll());
-        return ResponseEntity.status(HttpStatus.OK).body(panels);
+    @ResponseStatus(HttpStatus.OK)
+    public List<SolarPanelDTO> findAllSolarPanels() {
+        return solarPanelCollectionMapper.toCollectionModel(solarPanelRepository.findAll());
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<SolarPanel> findSolarPanelById(@PathVariable Long id) {
-        SolarPanel panel = solarPanelService.getSolarPanelOrException(id);
-        return ResponseEntity.status(HttpStatus.OK).body(panel);
+    @ResponseStatus(HttpStatus.OK)
+    public SolarPanel findSolarPanelById(@PathVariable Long id) {
+        return solarPanelService.getSolarPanelOrException(id);
     }
 
 
     @GetMapping("/{id}/stats")
-    public ResponseEntity<SolarPanelStatsDTO> getSolarPanelStats(@PathVariable Long id, @RequestParam("kwh") double kwh) {
+    @ResponseStatus(HttpStatus.OK)
+    public SolarPanelStatsDTO getSolarPanelStats(@PathVariable Long id, @RequestParam("kwh") double kwh) {
         SolarPanel panel = solarPanelService.getSolarPanelOrException(id);
-        SolarPanelStatsDTO solarPanelStats = solarPanelStatsMapper.toModel(panel, kwh);
-        return ResponseEntity.status(HttpStatus.OK).body(solarPanelStats);
+        return solarPanelStatsMapper.toModel(panel, kwh);
     }
 
 
     @ApiResponses(value = @ApiResponse(responseCode = "201"))
     @PostMapping
-    public ResponseEntity<SolarPanel> createSolarPanel(@Valid @RequestBody SolarPanel solarPanel) {
-        SolarPanel savedPanel = solarPanelService.save(solarPanel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedPanel);
+    @ResponseStatus(HttpStatus.CREATED)
+    public SolarPanel createSolarPanel(@RequestBody @Valid SolarPanelInput solarPanelInput) {
+        var solarPanel = solarPanelUnmapper.toDomainObject(solarPanelInput);
+        return solarPanelService.save(solarPanel);
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<SolarPanel> updateSolarPanel(@PathVariable Long id, @Valid @RequestBody SolarPanel solarPanel) {
-        SolarPanel updatedPanel = solarPanelService.update(id, solarPanel);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedPanel);
+    @ResponseStatus(HttpStatus.OK)
+    public SolarPanel updateSolarPanel(@PathVariable Long id, @RequestBody @Valid SolarPanelInput solarPanelInput) {
+        var solarPanel = solarPanelUnmapper.toDomainObject(solarPanelInput);
+        return  solarPanelService.update(id, solarPanel);
     }
 
 
     @ApiResponses(value = @ApiResponse(responseCode = "204"))
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteSolarPanel(@PathVariable Long id) {
+    public void deleteSolarPanel(@PathVariable Long id) {
         solarPanelService.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
