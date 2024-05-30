@@ -1,8 +1,10 @@
 package fatec.sp.gov.br.smartleaf.domain.service;
 
+import fatec.sp.gov.br.smartleaf.api.dto.input.SolarPanelWithImageInput;
 import fatec.sp.gov.br.smartleaf.domain.exception.ImagemDefaultException;
 import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
 import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
+import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +55,16 @@ public class SolarPanelImageService {
                     .contentType(MediaType.parseMediaType(DEFAULT_IMAGE_MEDIA_TYPE))
                     .body(new InputStreamResource(foto));
         }
+    }
+
+
+    @Transactional
+    public SolarPanel saveSolarPanelWithImage(SolarPanelWithImageInput solarPanelWithImageInput) throws IOException {
+        var solarPanel = solarPanelWithImageInput.formatToSolarPanel();
+        var fotoSolarPanel = solarPanelWithImageInput.formatToImage(solarPanel);
+        solarPanel = solarPanelService.save(solarPanel);
+        save(fotoSolarPanel, solarPanelWithImageInput.arquivoInputStream());
+        return solarPanel;
     }
 
 

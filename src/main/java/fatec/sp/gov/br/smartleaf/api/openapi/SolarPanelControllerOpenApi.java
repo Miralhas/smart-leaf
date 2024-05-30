@@ -4,11 +4,13 @@ package fatec.sp.gov.br.smartleaf.api.openapi;
 import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelDTO;
 import fatec.sp.gov.br.smartleaf.api.dto.SolarPanelStatsDTO;
 import fatec.sp.gov.br.smartleaf.api.dto.input.SolarPanelInput;
+import fatec.sp.gov.br.smartleaf.api.dto.input.SolarPanelWithImageInput;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "Solar Panel")
@@ -25,6 +27,9 @@ public interface SolarPanelControllerOpenApi {
 
     @Operation(summary = "Create a Solar Panel Entity")
     SolarPanel createSolarPanel(SolarPanelInput solarPanelInput);
+
+    @Operation(summary = "Create a Solar Panel Entity with Image")
+    SolarPanel createSolarPanelWithImage(SolarPanelWithImageInput solarPanelWithImageInput) throws IOException;
 
     @Operation(summary = "Update a specific Solar Panel")
     SolarPanel updateSolarPanel(Long id, SolarPanelInput solarPanelInput);
