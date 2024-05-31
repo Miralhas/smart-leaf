@@ -24,7 +24,7 @@ public interface SolarPanelControllerOpenApi {
     SolarPanel findSolarPanelById(Long id);
 
     @Operation(summary = "Get a specific Solar Panel by Name")
-    SolarPanel findSolarPanelByNameContaining(@RequestParam("name") String name);
+    List<SolarPanelDTO> findSolarPanelByNameContaining(@RequestParam("name") String name);
 
     @Operation(summary = "Get stats of a specific Solar Panel")
     SolarPanelStatsDTO getSolarPanelStats(Long id, double kwh);

@@ -47,8 +47,8 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
 
     @GetMapping(params = "name")
     @ResponseStatus(HttpStatus.OK)
-    public SolarPanel findSolarPanelByNameContaining(@RequestParam("name") String name) {
-        return solarPanelService.getSolarPanelByNameOrException(name);
+    public List<SolarPanelDTO> findSolarPanelByNameContaining(@RequestParam("name") String name) {
+        return solarPanelCollectionMapper.toCollectionModel(solarPanelService.getSolarPanelByNameOrException(name));
     }
 
 

@@ -3,6 +3,7 @@ package fatec.sp.gov.br.smartleaf.domain.service;
 import fatec.sp.gov.br.smartleaf.api.dto.StatsDTO;
 import fatec.sp.gov.br.smartleaf.api.dto.input.SolarPanelInput;
 import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelUnmapper;
+import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
 import fatec.sp.gov.br.smartleaf.domain.exception.SolarPanelNaoEncontradoException;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -68,13 +70,12 @@ public class SolarPanelService {
 
     @Transactional
     public void delete(Long id) {
-        try {
-            solarPanelRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
+        var fotoOptional = solarPanelRepository.findFotoById(id);
+        if (fotoOptional.isPresent()) {
             solarPanelImageService.delete(id);
             solarPanelRepository.flush();
-            solarPanelRepository.deleteById(id);
         }
+        solarPanelRepository.deleteById(id);
     }
 
     public SolarPanel getSolarPanelOrException(Long id) {
@@ -83,9 +84,8 @@ public class SolarPanelService {
     }
 
 
-    public SolarPanel getSolarPanelByNameOrException(String name) {
-        return solarPanelRepository.findSolarPanelByModelNameContaining(name)
-                .orElseThrow(() -> new SolarPanelNaoEncontradoException(name));
+    public List<SolarPanel> getSolarPanelByNameOrException(String name) {
+        return solarPanelRepository.findSolarPanelByModelNameContaining(name);
     }
 
 

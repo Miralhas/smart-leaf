@@ -69,7 +69,7 @@ public class SolarPanelImageService {
 
 
     public FotoSolarPanel getImageJSONOrException(Long id) {
-        solarPanelService.getSolarPanelOrException(id);
+//        solarPanelService.getSolarPanelOrException(id);
         return solarPanelRepository.findFotoById(id)
                 .orElseThrow(() -> new ImagemNaoEncontradaException(id));
     }
