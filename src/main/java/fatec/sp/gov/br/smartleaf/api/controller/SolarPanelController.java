@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -43,6 +42,13 @@ public class SolarPanelController implements SolarPanelControllerOpenApi {
     @ResponseStatus(HttpStatus.OK)
     public List<SolarPanelDTO> findAllSolarPanels() {
         return solarPanelCollectionMapper.toCollectionModel(solarPanelRepository.findAll());
+    }
+
+
+    @GetMapping(params = "name")
+    @ResponseStatus(HttpStatus.OK)
+    public SolarPanel findSolarPanelByNameContaining(@RequestParam("name") String name) {
+        return solarPanelService.getSolarPanelByNameOrException(name);
     }
 
 

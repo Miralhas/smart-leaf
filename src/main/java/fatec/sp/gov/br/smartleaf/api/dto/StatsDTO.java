@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class StatsDTO {
-    private BigDecimal panelsNedeed;
+    private Double panelsNedeed;
     private BigDecimal estimatedPrice;
     private BigDecimal returnOfInvestment;
 }

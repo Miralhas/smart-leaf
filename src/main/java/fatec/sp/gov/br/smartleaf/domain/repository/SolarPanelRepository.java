@@ -10,4 +10,7 @@ import java.util.Optional;
 public interface SolarPanelRepository extends JpaRepository<SolarPanel, Long>, SolarPanelRepositoryQueries {
     @Query("from FotoSolarPanel where solarPanel.id = :id")
     Optional<FotoSolarPanel> findFotoById(Long id);
+
+    @Query("from SolarPanel sp where sp.model like concat('%', :name, '%') order by sp.id limit 1")
+    Optional<SolarPanel> findSolarPanelByModelNameContaining(String name);
 }

@@ -1,5 +1,6 @@
 package fatec.sp.gov.br.smartleaf.infrastructure.service.storage;
 
+import fatec.sp.gov.br.smartleaf.SmartLeafApplication;
 import fatec.sp.gov.br.smartleaf.domain.service.FotoStorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,11 +13,6 @@ import java.nio.file.Path;
 
 @Service
 public class LocalFotoStorageService implements FotoStorageService {
-
-    @Value("${smartleaf.storage.local.diretorio-fotos}")
-    private Path storagePath;
-
-    private final Path pathTeste = Path.of("/src/main/resources/images");
 
     @Override
     public InputStream recuperar(String nomeArquivo) {
@@ -48,7 +44,7 @@ public class LocalFotoStorageService implements FotoStorageService {
     }
 
     private Path getArquivoPath(String nomeArquivo) {
-//        return Path.of(pathTeste.toString(), nomeArquivo);
-        return Path.of(storagePath.toString(), nomeArquivo);
+        var imagesFolderPath = SmartLeafApplication.getPath("images");
+        return Path.of(imagesFolderPath.toString(), nomeArquivo);
     }
 }

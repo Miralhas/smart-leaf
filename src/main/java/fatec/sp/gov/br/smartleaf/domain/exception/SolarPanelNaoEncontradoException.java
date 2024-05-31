@@ -5,4 +5,8 @@ public class SolarPanelNaoEncontradoException extends EntidadeNaoEncontradaExcep
     public SolarPanelNaoEncontradoException(Long id) {
         super(String.format("Painel Solar de código %d não foi encontrado", id));
     }
+
+    public SolarPanelNaoEncontradoException(String name) {
+        super(String.format("Painel Solar de nome %s não foi encontrado", name));
+    }
 }

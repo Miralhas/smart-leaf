@@ -6,7 +6,6 @@ import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelUnmapper;
 import fatec.sp.gov.br.smartleaf.domain.exception.SolarPanelNaoEncontradoException;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,7 @@ public class SolarPanelService {
                 maximumPower, efficiencyPercentage
         ));
 
-        solarPanelStats.setPanelsNedeed(panelsNeeded);
+        solarPanelStats.setPanelsNedeed(Math.ceil(panelsNeeded.doubleValue()));
         solarPanelStats.setEstimatedPrice(estimatedPrice);
         solarPanelStats.setReturnOfInvestment(returnOfInvestment);
 
@@ -84,6 +83,12 @@ public class SolarPanelService {
     }
 
 
+    public SolarPanel getSolarPanelByNameOrException(String name) {
+        return solarPanelRepository.findSolarPanelByModelNameContaining(name)
+                .orElseThrow(() -> new SolarPanelNaoEncontradoException(name));
+    }
+
+
     private BigDecimal getEstimatedPrice(BigDecimal panelsNeeded, BigDecimal price) {
         return BigDecimal.valueOf(panelsNeeded.doubleValue() * price.doubleValue())
                 .setScale(2, RoundingMode.FLOOR);
@@ -92,6 +97,8 @@ public class SolarPanelService {
 
     private BigDecimal getPanelsNeeded(Integer maximumPower, Integer efficiencyPercentage, double kwh) {
         var solarPanelMonthlyEnergy = getsolarPanelMonthlyEnergy(maximumPower, efficiencyPercentage);
+
+        System.out.println(solarPanelMonthlyEnergy);
 
         return BigDecimal.valueOf(kwh / solarPanelMonthlyEnergy)
                 .setScale(2, RoundingMode.FLOOR);

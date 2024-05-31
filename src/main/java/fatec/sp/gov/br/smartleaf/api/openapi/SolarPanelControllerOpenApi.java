@@ -9,6 +9,7 @@ import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +22,9 @@ public interface SolarPanelControllerOpenApi {
 
     @Operation(summary = "Get a specific Solar Panel")
     SolarPanel findSolarPanelById(Long id);
+
+    @Operation(summary = "Get a specific Solar Panel by Name")
+    SolarPanel findSolarPanelByNameContaining(@RequestParam("name") String name);
 
     @Operation(summary = "Get stats of a specific Solar Panel")
     SolarPanelStatsDTO getSolarPanelStats(Long id, double kwh);

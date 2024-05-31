@@ -1,6 +1,7 @@
 package fatec.sp.gov.br.smartleaf.local_run;
 
 import fatec.sp.gov.br.smartleaf.SmartLeafApplication;
+import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
 import fatec.sp.gov.br.smartleaf.domain.service.SolarPanelService;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
