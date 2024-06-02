@@ -1,5 +1,6 @@
 package fatec.sp.gov.br.smartleaf.api.controller;
 
+import fatec.sp.gov.br.smartleaf.api.openapi.LoginControllerOpenApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -7,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/login")
-public class LoginController {
+public class LoginController implements LoginControllerOpenApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)

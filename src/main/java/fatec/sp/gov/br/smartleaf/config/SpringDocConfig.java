@@ -23,7 +23,13 @@ public class SpringDocConfig {
                         Arrays.asList(
                                 new Tag()
                                         .name("Solar Panel")
-                                        .description("Solar Panel Endpoints")
+                                        .description("Solar Panel Endpoints"),
+                                new Tag()
+                                        .name("Solar Panel Image")
+                                        .description("Solar Panel Images Endpoints"),
+                                new Tag()
+                                        .name("Login")
+                                        .description("Login Endpoints")
                         )
                 );
     }

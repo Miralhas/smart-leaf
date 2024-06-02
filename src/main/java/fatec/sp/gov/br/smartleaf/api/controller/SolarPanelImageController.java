@@ -2,6 +2,7 @@ package fatec.sp.gov.br.smartleaf.api.controller;
 
 import fatec.sp.gov.br.smartleaf.api.dto.FotoSolarPanelDTO;
 import fatec.sp.gov.br.smartleaf.api.dto_mapper.FotoSolarPanelMapper;
+import fatec.sp.gov.br.smartleaf.api.openapi.SolarPanelImageControllerOpenApi;
 import fatec.sp.gov.br.smartleaf.domain.model.FotoSolarPanel;
 import fatec.sp.gov.br.smartleaf.api.dto.input.FotoProdutoInput;
 import fatec.sp.gov.br.smartleaf.domain.service.SolarPanelImageService;
@@ -21,7 +22,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/panels/{id}/foto")
 @RequiredArgsConstructor
-public class SolarPanelImageController {
+public class SolarPanelImageController implements SolarPanelImageControllerOpenApi {
 
     private final SolarPanelImageService solarPanelImageService;
     private final FotoSolarPanelMapper fotoSolarPanelMapper;
