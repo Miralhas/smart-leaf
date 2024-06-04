@@ -1,4 +1,4 @@
-package fatec.sp.gov.br.smartleaf.infrastructure.springdoc;
+package fatec.sp.gov.br.smartleaf.config;
 
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -16,14 +16,20 @@ public class SpringDocConfig {
     public OpenAPI openAPI() {
         return new OpenAPI().info(new Info()
                 .title("SmartLeaf API")
-                .version("v0.0.1")
+                .version("v1.0.0")
                 .description("SmartLeaf RESTful API Documentation")
         )
                 .tags(
                         Arrays.asList(
                                 new Tag()
                                         .name("Solar Panel")
-                                        .description("Solar Panel Endpoints")
+                                        .description("Solar Panel Endpoints"),
+                                new Tag()
+                                        .name("Solar Panel Image")
+                                        .description("Solar Panel Images Endpoints"),
+                                new Tag()
+                                        .name("Login")
+                                        .description("Login Endpoints")
                         )
                 );
     }

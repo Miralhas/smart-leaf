@@ -1,59 +1,80 @@
 package fatec.sp.gov.br.smartleaf.domain.service;
 
+import fatec.sp.gov.br.smartleaf.api.dto.StatsDTO;
+import fatec.sp.gov.br.smartleaf.api.dto.input.SolarPanelInput;
+import fatec.sp.gov.br.smartleaf.api.dto_mapper.SolarPanelUnmapper;
+import fatec.sp.gov.br.smartleaf.domain.exception.ImagemNaoEncontradaException;
 import fatec.sp.gov.br.smartleaf.domain.exception.SolarPanelNaoEncontradoException;
 import fatec.sp.gov.br.smartleaf.domain.model.SolarPanel;
 import fatec.sp.gov.br.smartleaf.domain.repository.SolarPanelRepository;
-import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class SolarPanelService {
 
     public static final double K_WH_PRICE = 0.92;
+    public static final double SUN_IRRADIATION = 4.93;
+
     private final SolarPanelRepository solarPanelRepository;
+    private final SolarPanelImageService solarPanelImageService;
+    private final SolarPanelUnmapper solarPanelUnmapper;
 
-    public SolarPanelService(SolarPanelRepository solarPanelRepository) {
+    public SolarPanelService(SolarPanelRepository solarPanelRepository,
+                             @Lazy SolarPanelImageService solarPanelImageService, SolarPanelUnmapper solarPanelUnmapper) {
         this.solarPanelRepository = solarPanelRepository;
+        this.solarPanelImageService = solarPanelImageService;
+        this.solarPanelUnmapper = solarPanelUnmapper;
     }
 
+    @Transactional
     public SolarPanel save(SolarPanel solarPanel) {
-        return solarPanelRepository.save(solarPanel);
+        solarPanel = solarPanelRepository.save(solarPanel);
+        return solarPanel;
     }
 
-    public Map<String, BigDecimal> getStats(SolarPanel solarPanel, double kwh) {
-        Map<String, BigDecimal> stats = new HashMap<>();
+
+    public StatsDTO getSolarPanelStats(SolarPanel solarPanel, double kwh) {
+        StatsDTO solarPanelStats = new StatsDTO();
 
         var solarPanelPrice = solarPanel.getPrice();
         var maximumPower = solarPanel.getMaximumPower();
-        var efficiency = solarPanel.getEfficiency();
-        var sunIrradiation = 4.93;
+        var efficiencyPercentage = solarPanel.getEfficiency();
 
-        var panelsNeeded = getPanelsNeeded(maximumPower, efficiency, sunIrradiation, kwh);
+        var panelsNeeded = getPanelsNeeded(maximumPower, efficiencyPercentage, kwh);
         var estimatedPrice = getEstimatedPrice(panelsNeeded, solarPanelPrice);
         var returnOfInvestment = getReturnOfInvestment(estimatedPrice, getsolarPanelMonthlyEnergy(
-                maximumPower, efficiency, sunIrradiation
+                maximumPower, efficiencyPercentage
         ));
 
-        stats.put("panelsNeeded", panelsNeeded);
-        stats.put("estimatedPrice", estimatedPrice);
-        stats.put("returnOfInvestment", returnOfInvestment);
+        solarPanelStats.setPanelsNedeed(Math.ceil(panelsNeeded.doubleValue()));
+        solarPanelStats.setEstimatedPrice(estimatedPrice);
+        solarPanelStats.setReturnOfInvestment(returnOfInvestment);
 
-        return stats;
+        return solarPanelStats;
     }
 
-    public SolarPanel update(Long id, SolarPanel solarPanel) {
+    @Transactional
+    public SolarPanel update(Long id, SolarPanelInput solarPanelInput) {
         var currentSolarPanel = getSolarPanelOrException(id);
-        BeanUtils.copyProperties(solarPanel, currentSolarPanel, "id");
+        solarPanelUnmapper.copyToDomainObject(solarPanelInput, currentSolarPanel);
         return solarPanelRepository.save(currentSolarPanel);
     }
 
+    @Transactional
     public void delete(Long id) {
+        var fotoOptional = solarPanelRepository.findFotoById(id);
+        if (fotoOptional.isPresent()) {
+            solarPanelImageService.delete(id);
+            solarPanelRepository.flush();
+        }
         solarPanelRepository.deleteById(id);
     }
 
@@ -63,14 +84,21 @@ public class SolarPanelService {
     }
 
 
+    public List<SolarPanel> getSolarPanelByNameOrException(String name) {
+        return solarPanelRepository.findSolarPanelByModelNameContaining(name);
+    }
+
+
     private BigDecimal getEstimatedPrice(BigDecimal panelsNeeded, BigDecimal price) {
         return BigDecimal.valueOf(panelsNeeded.doubleValue() * price.doubleValue())
                 .setScale(2, RoundingMode.FLOOR);
     }
 
 
-    private BigDecimal getPanelsNeeded(Integer maximumPower, Integer efficiency, double sunIrradiation, double kwh) {
-        var solarPanelMonthlyEnergy = getsolarPanelMonthlyEnergy(maximumPower, efficiency, sunIrradiation);
+    private BigDecimal getPanelsNeeded(Integer maximumPower, Integer efficiencyPercentage, double kwh) {
+        var solarPanelMonthlyEnergy = getsolarPanelMonthlyEnergy(maximumPower, efficiencyPercentage);
+
+        System.out.println(solarPanelMonthlyEnergy);
 
         return BigDecimal.valueOf(kwh / solarPanelMonthlyEnergy)
                 .setScale(2, RoundingMode.FLOOR);
@@ -83,8 +111,9 @@ public class SolarPanelService {
         return BigDecimal.valueOf(returnOfInvestment).setScale(2, RoundingMode.FLOOR);
     }
 
-    private double getsolarPanelMonthlyEnergy(Integer maximumPower, Integer efficiency, double sunIrradiation) {
-        var solarPanelDailyEnergy = maximumPower * (efficiency / 100.0);
-        return ((solarPanelDailyEnergy * sunIrradiation) * 30) / 100.0;
+    private double getsolarPanelMonthlyEnergy(Integer maximumPower, Integer efficiencyPercentage) {
+        var solarPanelDailyEnergy = maximumPower * (efficiencyPercentage / 100.0);
+        return ((solarPanelDailyEnergy * SUN_IRRADIATION) * 30) / 100.0;
     }
+
 }

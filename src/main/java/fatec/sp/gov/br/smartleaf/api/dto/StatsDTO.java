@@ -1,4 +1,4 @@
-package fatec.sp.gov.br.smartleaf.api.model;
+package fatec.sp.gov.br.smartleaf.api.dto;
 
 
 import lombok.Getter;
@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class StatsModel {
-    private BigDecimal panelsNedeed;
+public class StatsDTO {
+    private Double panelsNedeed;
     private BigDecimal estimatedPrice;
     private BigDecimal returnOfInvestment;
 }
